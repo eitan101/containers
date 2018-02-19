@@ -1,5 +1,0 @@
-FROM anapsix/alpine-java:9
-
-COPY target/mykafka-1.0-SNAPSHOT.jar /app/app.jar
-
-CMD ["java","-cp","/app/app.jar","grp.MyProducer"]

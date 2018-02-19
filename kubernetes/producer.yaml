@@ -1,23 +1,21 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: mykafka-consumer
+  name: mykafka-producer
 spec:
   selector:
     matchLabels:
-      app: lbl-mykafka-consumer
+      app: lbl-mykafka-producer
   replicas: 1
   template: 
     metadata:
       labels:
-        app: lbl-mykafka-consumer
+        app: lbl-mykafka-producer
     spec:
       containers:
-      - name: cont-mykafka-consumer
-        image: mykafka-consumer:1.0-SNAPSHOT
+      - name: cont-mykafka-producer
+        image: eitanya/mykafka-producer:latest
         env:
-        - name: group.id
-          value: cool-consumer
         - name: bootstrap.servers
           value: kafka:9092
         - name: TOPIC
