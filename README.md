@@ -8,7 +8,8 @@ docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim bash
 mvn -q archetype:generate # filter: jdk9, item #1, group: grp, artifactId:yourname-jdk
 cd yourname-jdk
 mvn -q package
-java -jar target/yourname_app-1.0-SNAPSHOT.jar
+java -jar target/yourname-jdk-1.0-SNAPSHOT.jar
+# close the container ^d
 docker build -t test yourname-jdk
 docker run --rm test
 ```
@@ -58,7 +59,7 @@ services:
       - yourname-dw-volume:/var/lib/mysql
 
 volumes:
-  yourname-dw-volum
+  yourname-dw-volume
 ```
 
 run:
@@ -69,11 +70,13 @@ docker-compose up -d --scale yourname-dw=3
 ### Swarm
 ```sh
 docker-compose down
-docker swarm init --advertise-addr 192.168.0.49
-docker deploy -c docker-compose.yml mystack
+docker swarm init --advertise-addr $YOUR_IP
+docker deploy -c docker-compose.yaml mystack
 docker service ls
 docker service scale mystack_yourname-dw=3
 docker service ls
+docker service logs -f mystack_yourname-dw
+docker stack rm mystack
 ```
 
 ## Kafka Clients
