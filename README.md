@@ -92,6 +92,12 @@ docker service scale mystack_mykafka-consumer=3
 docker service logs -f mystack_mykafka-consumer
 docker stack rm mystack
 ```
+### Kubernetes
+```sh
+minikube start
+kubectl apply -f k8s.yml
+watch kubectl get deployment
+```
 
 
 
