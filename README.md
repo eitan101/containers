@@ -68,6 +68,7 @@ docker-compose down
 docker-compose up -d --scale yourname-dw=3
 ```
 ### Swarm
+Bring back the mapping of 8080.
 ```sh
 docker-compose down
 docker swarm init --advertise-addr $YOUR_IP
