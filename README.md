@@ -92,11 +92,20 @@ docker service scale mystack_mykafka-consumer=3
 docker service logs -f mystack_mykafka-consumer
 docker stack rm mystack
 ```
-### Kubernetes
+### Kubernetes (minikube)
+prerequisite: minikube on your machine
+
 ```sh
+mvn -q archetype:generate -Dfilter=kafka-app
+cd mykafka
+docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
 minikube start
+eval $(minikube docker-env)
+docker-compose build
 kubectl apply -f k8s.yml
 watch kubectl get deployment
+kubectl get pod
+kubectl logs -f mykafka-consumer-89554596-qjv9q
 ```
 
 
