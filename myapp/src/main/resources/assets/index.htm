@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Demo App</title>
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.2/css/bulma.min.css'>
+  <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <style>
+    body { padding: 20px 0; }
+    form { margin-bottom: 15px; }
+  </style>
+</head>
+
+<body translate="no">
+  <div id="app">
+    <section class="section">
+      <h1 class="title is-1">
+        Demo App - myapp
+      </h1>
+      <div class="field">
+        <div class="control has-icons-left has-icons-right">
+          <input v-on:keyup.enter="createRecord(recordText)" v-model="recordText" class="input is-success" type="text" placeholder="Text input" value="bulma">
+          <span class="icon is-small is-left">
+            <i class="fa fa-cubes"></i>
+          </span>
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-text" v-on:click="createRecord(recordText)">Create</button>
+        </div>
+      </div>
+
+      <div v-for="rec in apps" class="box">
+            <div class="content">
+              <strong>{{rec.hello}}</strong>
+              <small>{{rec.id}}</small>
+            </div>
+      </div>
+
+    </section>
+  </div>
+
+  <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
+  <script src='https://unpkg.com/vue/dist/vue.js'></script>
+
+  <script>
+    'use strict';
+
+    new Vue({
+      el: '#app',
+      data: {
+        recordText: null,
+        apps: []
+      },
+      methods: {
+        createRecord(x) {
+          axios.post(`/api/items`, { hello : x })
+            .then(response => {
+              this.updateList();
+              this.recordText = null;
+            });
+        },
+        updateList() {
+          axios.get(`/api/items`)
+            .then(response => {
+              this.apps = response.data;
+            });
+        }
+      },
+      beforeMount() {
+        this.updateList();
+      }
+    });
+
+  </script>
+</body>
+</html>

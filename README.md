@@ -67,20 +67,52 @@ run:
 docker-compose down
 docker-compose up -d --scale yourname-dw=3
 ```
-### Swarm
-Bring back the mapping of 8080.
+## Swarm
 ```sh
-docker-compose down
+docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q archetype:generate
+# filter: dropwizard-app, item #1, group: grp, artifactId:yournameapp
+cd yournameapp
+docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
 docker swarm init --advertise-addr $YOUR_IP
-docker deploy -c docker-compose.yaml mystack
+docker deploy -c docker-compose.yml mystack
 docker service ls
 docker service scale mystack_yourname-dw=3
+# open http://{host_ip}:8080
 docker service ls
 docker service logs -f mystack_yourname-dw
 docker stack rm mystack
 ```
 
+## Kubernetes (minikube)
+### Prerequisites
+
+* docker on your machine
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl)
+* [minikube](https://github.com/kubernetes/minikube/releases#OSX)
+* run once - ``minikube start``
+
+### REST Service
+
+```sh
+docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q archetype:generate
+# filter: dropwizard-app, item #1, group: grp, artifactId:yournameapp
+cd yournameapp
+docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
+minikube start
+eval $(minikube docker-env)
+docker-compose build
+kubectl apply -f k8s.yml
+kubectl get deployments
+minikube service yournameapp
+# update app "replicas: 1" to 3
+kubectl apply -f k8s.yml
+kubectl get deployments
+# minikube stop/start - to test data persistancy
+kubectl delete -f k8s.yml
+```
+
 ## Kafka Clients
+### Using Swarm
 ```sh
 docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q archetype:generate -Dfilter=kafka-app
 cd mykafka/
@@ -93,9 +125,8 @@ docker service scale mystack_mykafka-consumer=3
 docker service logs -f mystack_mykafka-consumer
 docker stack rm mystack
 ```
-### Kubernetes (minikube)
-prerequisite: minikube on your machine
 
+### Using Kubernetes
 ```sh
 mvn -q archetype:generate -Dfilter=kafka-app
 cd mykafka

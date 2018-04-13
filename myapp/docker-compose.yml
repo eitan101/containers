@@ -1,0 +1,22 @@
+version: "3"
+services:
+  myapp:
+    build: .
+    image: myapp:1.0-SNAPSHOT
+    ports:
+      - "8080:8080"
+    environment:
+      JDBC_DRIVER: "com.mysql.cj.jdbc.Driver"
+      JDBC_URL: "jdbc:mysql://db:3306/mydb?useSSL=false"
+
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: 123456
+      MYSQL_DATABASE: mydb
+    volumes:
+      - myapp-volume:/var/lib/mysql
+
+volumes:
+  myapp-volume:

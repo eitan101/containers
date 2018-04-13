@@ -1,0 +1,115 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysqldata
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 20Mi
+  hostPath:
+    path: /data/mysqldata
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mysqldataclaim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Mi
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: db
+spec:
+  selector:
+    matchLabels:
+      app: lbl-db
+  replicas: 1
+  template: 
+    metadata:
+      labels:
+        app: lbl-db
+    spec:
+      containers:
+      - name: cont-db
+        image: mysql
+        env:          
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root"
+        - name: MYSQL_PASSWORD
+          value: "123456"
+        - name: MYSQL_DATABASE
+          value: "mydb"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mylocaldata
+          mountPath: /var/lib/mysql
+      volumes:
+        - name: mylocaldata
+          persistentVolumeClaim:
+            claimName: mysqldataclaim
+        # - name: mylocaldata
+        #   hostPath:
+        #     path: /data/mysqldata
+        #     type: DirectoryOrCreate
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: db
+spec:
+  clusterIP: None
+  selector:
+    app: lbl-db
+  ports:
+  - protocol: TCP
+    port: 3306
+    targetPort: 3306
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: myapp
+spec:
+  clusterIP: 10.105.128.111
+  type: LoadBalancer
+  selector:
+    app: lbl-myapp
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: myapp
+spec:
+  selector:
+    matchLabels:
+      app: lbl-myapp
+  replicas: 1
+  template: 
+    metadata:
+      labels:
+        app: lbl-myapp
+    spec:
+      containers:
+      - name: cont-myapp
+        image: myapp:1.0-SNAPSHOT
+        env:
+        - name: JDBC_DRIVER
+          value: "com.mysql.cj.jdbc.Driver"
+        - name: JDBC_URL
+          value: "jdbc:mysql://db:3306/mydb?useSSL=false"
+        ports:
+        - containerPort: 8080
+        - containerPort: 8081
+
