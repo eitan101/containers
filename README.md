@@ -68,22 +68,30 @@ docker-compose down
 docker-compose up -d --scale yourname-dw=3
 ```
 ## Swarm
+### Single Node Swarm
 ```sh
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q archetype:generate
-# filter: dropwizard-app, item #1, group: grp, artifactId:yournameapp
-cd yournameapp
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
 docker swarm init --advertise-addr $YOUR_IP
-docker deploy -c docker-compose.yml mystack
+wget https://eitan101.github.io/containers/manifests-examples/docker-compose.yml
+docker deploy -c docker-compose.yml my
 docker service ls
-docker service scale mystack_yourname-dw=3
+docker service scale my_myapp=3
 # open http://{host_ip}:8080
 docker service ls
-docker service logs -f mystack_yourname-dw
-docker stack rm mystack
+docker service logs -f my_myapp
+docker stack rm my
 ```
 
-## Kubernetes (minikube)
+### Swarm Cluster
+On ``play with docker`` site:
+
+*  Delete your instance
+*  Press the wrench icon
+*  Choose 2 Managers and 3 workers template.
+
+From the ``manager1`` instance repeat the previous scenario, skipping the ``swarm init`` command.
+
+
+## Kubernetes
 ### Locally prerequisites
 
 * docker on your machine
