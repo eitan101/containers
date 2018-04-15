@@ -84,26 +84,32 @@ docker stack rm mystack
 ```
 
 ## Kubernetes (minikube)
-### Prerequisites
+### Locally prerequisites
 
 * docker on your machine
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl)
 * [minikube](https://github.com/kubernetes/minikube/releases#OSX)
 * run once - ``minikube start``
 
+### Katacoda
+Signup using google account and go to the [minikube playground](https://katacoda.com/embed/kubernetes-bootcamp/1/)
+
+
 ### REST Service
 
 ```sh
 docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q archetype:generate
-# filter: dropwizard-app, item #1, group: grp, artifactId:yournameapp
-cd yournameapp
+# filter: dropwizard-app, item #1, group: grp, artifactId:myapp
+# or: git clone https://github.com/eitan101/containers.git && cd containers
+cd myapp
 docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
 minikube start
 eval $(minikube docker-env)
 docker-compose build
 kubectl apply -f k8s.yml
 kubectl get deployments
-minikube service yournameapp
+# osx: minikube service myapp
+# katacoda: minikube service list, open browser to the correct port
 # update app "replicas: 1" to 3
 kubectl apply -f k8s.yml
 kubectl get deployments

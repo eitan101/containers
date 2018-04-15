@@ -103,7 +103,7 @@ spec:
     spec:
       containers:
       - name: cont-myapp
-        image: myapp:1.0-SNAPSHOT
+        image: eitanya/myapp:1.0-SNAPSHOT
         env:
         - name: JDBC_DRIVER
           value: "com.mysql.cj.jdbc.Driver"
