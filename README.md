@@ -3,7 +3,8 @@
 Log in to https://labs.play-with-docker.com/
 ## Simple App
 ```sh
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim bash
+alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
+build-machine bash
 # inside the container
 mvn -q archetype:generate # filter: jdk9, item #1, group: grp, artifactId:yourname-jdk
 cd yourname-jdk
@@ -16,10 +17,11 @@ docker run --rm test
 
 ## REST Service
 ```sh
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q archetype:generate
+alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
+build-machine mvn -q archetype:generate
 # filter: dropwizard-app, item #1, group: grp, artifactId:yourname-dw
 cd yourname-dw
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
+build-machine mvn -q package
 docker build -t test .
 docker run --rm -p 8080:8080 test 
 ```
@@ -82,7 +84,7 @@ docker stack rm my
 ```
 
 ### Swarm Cluster
-On ``play with docker`` site:
+In the ``play with docker`` site:
 
 *  Delete your instance
 *  Press the wrench icon
@@ -90,47 +92,67 @@ On ``play with docker`` site:
 
 From the ``manager1`` instance repeat the previous scenario, skipping the ``swarm init`` command.
 
-
-## Kubernetes
-### Locally prerequisites
-
-* docker on your machine
-* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-binary-via-curl)
-* [minikube](https://github.com/kubernetes/minikube/releases#OSX)
-* run once - ``minikube start``
-
-### Katacoda
-Signup using google account and go to the [minikube playground](https://katacoda.com/embed/kubernetes-bootcamp/1/)
-
-
-### REST Service
+### Run on single node with local images
 
 ```sh
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q archetype:generate
+alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
+build-machine mvn -q archetype:generate
+# filter: dropwizard-app, item #1, group: grp, artifactId:myapp
+cd myapp
+build-machine mvn -q package
+docker-compose build
+docker swarm init --advertise-addr $YOUR_IP
+docker deploy -c docker-compose.yml my
+docker service ls
+docker service scale my_myapp=3
+# open http://{host_ip}:8080
+docker service ls
+docker service logs -f my_myapp
+docker stack rm my
+```
+
+## Kubernetes
+
+### Prerequisites
+[Signup to Katacoda](https://katacoda.com)
+
+### Minikube
+Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikube-1)
+
+### Minikube with local images
+Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikube-2)
+
+### Run minikube on your devicelocally
+
+Install minikube.
+
+```sh
+alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
+build-machine mvn -q archetype:generate
 # filter: dropwizard-app, item #1, group: grp, artifactId:myapp
 # or: git clone https://github.com/eitan101/containers.git && cd containers
 cd myapp
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
+build-machine mvn -q package
 minikube start
 eval $(minikube docker-env)
 docker-compose build
 kubectl apply -f k8s.yml
-kubectl get deployments
-# osx: minikube service myapp
-# katacoda: minikube service list, open browser to the correct port
+watch kubectl get pods
+minikube service myapp
 # update app "replicas: 1" to 3
 kubectl apply -f k8s.yml
-kubectl get deployments
 # minikube stop/start - to test data persistancy
 kubectl delete -f k8s.yml
 ```
 
 ## Kafka Clients
+
 ### Using Swarm
 ```sh
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q archetype:generate -Dfilter=kafka-app
+alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
+build-machine mvn -q archetype:generate -Dfilter=kafka-app
 cd mykafka/
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
+build-machine mvn -q package
 docker-compose build
 docker deploy -c docker-compose.yml mystack
 watch docker service ls
