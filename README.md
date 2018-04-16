@@ -158,6 +158,13 @@ kubectl apply -f k8s.yml
 # minikube stop/start - to test data persistancy
 kubectl delete -f k8s.yml
 ```
+### Add Weave Scope Visualizer
+
+```sh
+kubectl apply -f "https://cloud.weave.works/k8s/scope.yaml?k8s-service-type=NodePort&k8s-version=$(kubectl version | base64 | tr -d '\n')"
+kubectl create -f https://raw.githubusercontent.com/weaveworks-plugins/scope-http-statistics/master/deployments/k8s-http-statistics.yaml
+minikube service weave-scope-app
+```
 
 ## Kafka Clients
 
@@ -210,9 +217,17 @@ minikube start
 eval $(minikube docker-env)
 docker-compose build
 kubectl apply -f k8s.yml
-watch kubectl get deployment
-kubectl get pod
-kubectl logs -f $pod
+open http://0.0.0.0:30000
+```
+
+### Run minikube on your device locally
+
+Install minikube.
+
+```sh
+minikube start
+eval $(minikube docker-env)
+kubectl apply -f  https://eitan101.github.io/containers/manifests-examples/mykafka/k8s.yml
 ```
 
 
