@@ -92,6 +92,20 @@ In the ``play with docker`` site:
 
 From the ``manager1`` instance repeat the previous scenario, skipping the ``swarm init`` command.
 
+### Add Visual Dashboard
+
+Repeat previous section but add before:
+
+```sh
+docker run -it -d -p 18080:8080 -v /var/run/docker.sock:/var/run/docker.sock dockersamples/visualizer
+```
+
+Do the same with
+
+```sh
+docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
+```
+
 ### Run on single node with local images
 
 ```sh
@@ -154,6 +168,8 @@ kubectl delete -f k8s.yml
 wget https://eitan101.github.io/containers/manifests-examples/mykafka/docker-compose.yml
 docker deploy -c docker-compose.yml my
 watch docker service ls
+docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
+docker.sock dockersamples/visualizer
 docker service logs -f my_mykafka-consumer
 docker service scale my_mykafka-consumer=3
 docker service logs -f my_mykafka-consumer
@@ -167,6 +183,7 @@ alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
 build-machine mvn -q archetype:generate -Dfilter=kafka-app
 cd mykafka/
 build-machine mvn -q package
+#docker swarm init --advertise-addr $YOUR_IP
 docker-compose build
 docker deploy -c docker-compose.yml mystack
 watch docker service ls
