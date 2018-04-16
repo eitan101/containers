@@ -194,10 +194,7 @@ docker stack rm mystack
 ```
 
 ### Using minikube
-Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikube-1)
-
-### Minikube with local images
-Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikube-2)
+Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikube-kafka)
 
 ### Run minikube on your device locally
 
@@ -207,9 +204,8 @@ Install minikube.
 alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
 build-machine mvn -q archetype:generate -Dfilter=kafka-app
 # filter: kafka-app, item #1, group: grp, artifactId:mykafka
-# or: git clone https://github.com/eitan101/containers.git && cd containers
 cd mykafka
-docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
+build-machine mvn -q package
 minikube start
 eval $(minikube docker-env)
 docker-compose build
