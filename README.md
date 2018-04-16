@@ -176,7 +176,6 @@ wget https://eitan101.github.io/containers/manifests-examples/mykafka/docker-com
 docker deploy -c docker-compose.yml my
 watch docker service ls
 docker run -d -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock portainer/portainer
-docker.sock dockersamples/visualizer
 docker service logs -f my_mykafka-consumer
 docker service scale my_mykafka-consumer=3
 docker service logs -f my_mykafka-consumer
