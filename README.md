@@ -162,8 +162,7 @@ kubectl delete -f k8s.yml
 
 ```sh
 kubectl apply -f "https://cloud.weave.works/k8s/scope.yaml?k8s-service-type=NodePort&k8s-version=$(kubectl version | base64 | tr -d '\n')"
-kubectl create -f https://raw.githubusercontent.com/weaveworks-plugins/scope-http-statistics/master/deployments/k8s-http-statistics.yaml
-minikube service weave-scope-app
+minikube service -n weave weave-scope-app
 ```
 
 ## Kafka Clients
