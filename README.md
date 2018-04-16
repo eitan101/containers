@@ -73,7 +73,7 @@ docker-compose up -d --scale yourname-dw=3
 ### Single Node Swarm
 ```sh
 docker swarm init --advertise-addr $YOUR_IP
-wget https://eitan101.github.io/containers/manifests-examples/docker-compose.yml
+wget https://eitan101.github.io/containers/manifests-examples/myapp/docker-compose.yml
 docker deploy -c docker-compose.yml my
 docker service ls
 docker service scale my_myapp=3
@@ -122,7 +122,7 @@ Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikub
 ### Minikube with local images
 Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikube-2)
 
-### Run minikube on your devicelocally
+### Run minikube on your device locally
 
 Install minikube.
 
@@ -148,6 +148,20 @@ kubectl delete -f k8s.yml
 ## Kafka Clients
 
 ### Using Swarm
+
+```sh
+#docker swarm init --advertise-addr $YOUR_IP
+wget https://eitan101.github.io/containers/manifests-examples/mykafka/docker-compose.yml
+docker deploy -c docker-compose.yml my
+watch docker service ls
+docker service logs -f my_mykafka-consumer
+docker service scale my_mykafka-consumer=3
+docker service logs -f my_mykafka-consumer
+docker stack rm mystack
+```
+
+### Using Swarm with local images
+
 ```sh
 alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
 build-machine mvn -q archetype:generate -Dfilter=kafka-app
@@ -162,9 +176,21 @@ docker service logs -f mystack_mykafka-consumer
 docker stack rm mystack
 ```
 
-### Using Kubernetes
+### Using minikube
+Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikube-1)
+
+### Minikube with local images
+Scenario can be found [here](https://www.katacoda.com/eitan101/scenarios/minikube-2)
+
+### Run minikube on your device locally
+
+Install minikube.
+
 ```sh
-mvn -q archetype:generate -Dfilter=kafka-app
+alias build-machine='docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim'
+build-machine mvn -q archetype:generate -Dfilter=kafka-app
+# filter: kafka-app, item #1, group: grp, artifactId:mykafka
+# or: git clone https://github.com/eitan101/containers.git && cd containers
 cd mykafka
 docker run --rm -it -v $PWD:/my -w /my maven:3-jdk-9-slim mvn -q package
 minikube start
@@ -173,7 +199,7 @@ docker-compose build
 kubectl apply -f k8s.yml
 watch kubectl get deployment
 kubectl get pod
-kubectl logs -f mykafka-consumer-89554596-qjv9q
+kubectl logs -f $pod
 ```
 
 
