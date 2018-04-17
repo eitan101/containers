@@ -228,6 +228,9 @@ eval $(minikube docker-env)
 kubectl apply -f  https://eitan101.github.io/containers/manifests-examples/mykafka/k8s.yml
 ```
 
+## Diagram
+
+![Diagram](https://eitan101.github.io/containers/images/diagram.png "Diagram")
 
 
 
